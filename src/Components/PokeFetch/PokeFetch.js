@@ -2,15 +2,37 @@ import React, { Component } from 'react'
 import './PokeFetch.css';
 
 
-class PokeFetch extends Component {
-  constructor() {
-    super()
+export default class PokeFetch extends Component {
+  constructor(props) {
+    super(props)
     this.state = {
       pokeInfo: '',
       pokeSprite: '',
       pokeName: '',
+      pokemonShow: false,
+      timer: 10,
+      timerOn: false,
+      timerInterval: '',
     }
   }
+
+  startTimer = () => {
+    clearInterval(this.state.timerInterval)
+    this.fetchPokemon()
+    this.setState({ timerOn: true, pokemonShow: false, timer: 10 })
+    this.setState({
+      timerInterval: setInterval(() => {
+
+        if (this.state.timer > 0) {
+          this.setState({ timer: this.state.timer - 1, })
+        } else {
+          this.setState({ timerOn: false, pokemonShow: true })
+        }
+      }, 1000)
+    })
+  }
+
+
 
   fetchPokemon() {
     let min = Math.ceil(1);
@@ -29,18 +51,20 @@ class PokeFetch extends Component {
       .catch((err) => console.log(err))
   }
 
+
+
   render() {
+
     return (
       <div className={'wrapper'}>
-        <button className={'start'} onClick={() => this.fetchPokemon()}>Start!</button>
-        <h1 className={'timer'} >Timer Display</h1>
+        <button className={'start'} onClick={this.startTimer}>Start!</button>
+        <h1 className={'timer'}>{this.state.timer}</h1>
         <div className={'pokeWrap'}>
-          <img className={'pokeImg'} src={this.state.pokeSprite} />
-          <h1 className={'pokeName'}>{this.state.pokeName}</h1>
+          <img className={this.state.pokemonShow ? 'pokeImg' : 'pokeImg2'}src={this.state.pokeSprite} />
+          <h1 className={this.state.pokemonShow ? 'pokeName':'pokeName2'}>{this.state.pokeName}</h1>
         </div>
       </div>
     )
   }
 }
 
-export default PokeFetch;
